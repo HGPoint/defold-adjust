@@ -79,11 +79,11 @@ abstract class Utils {
 		return event;
 	}
 
-	static void dispatch_event(final LuaScriptListener script_listener, final Hashtable<Object, Object> event) {
+	static void dispatch_event(final LuaScriptListener script_listener, final Object event) {
 		dispatch_event(script_listener, event, false);
 	}
 
-	static void dispatch_event(final LuaScriptListener script_listener, final Hashtable<Object, Object> event, final boolean should_delete_ref) {
+	static void dispatch_event(final LuaScriptListener script_listener, final Object event, final boolean should_delete_ref) {
 		if ((script_listener == null) || (script_listener.listener == Lua.REFNIL) || (script_listener.listener == Lua.NOREF) || (script_listener.script_instance == Lua.REFNIL) || (script_listener.script_instance == Lua.NOREF)) {
 			return;
 		}
@@ -92,7 +92,7 @@ abstract class Utils {
 				Lua.rawget(L, Lua.REF_OWNER, script_listener.listener);
 				Lua.rawget(L, Lua.REF_OWNER, script_listener.script_instance);
 				Lua.dmscript_setinstance(L);
-				push_hashtable(L, event);
+				push_value(L, event);
 				Lua.call(L, 1, 0);
 				if (should_delete_ref) {
 					delete_ref(L, script_listener.listener);
