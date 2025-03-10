@@ -118,7 +118,7 @@ public class Extension
         boolean coppa_compliance = params.get_boolean("coppa_compliance", false);
         boolean play_store_kids_compliance = params.get_boolean("play_store_kids_compliance", false);
         int event_deduplication_ids_max_size = params.get_integer("event_deduplication_ids_max_size", 10);
-        string external_device_id = params.get_string("external_device_id")
+        string external_device_id = params.get_string("external_device_id");
 
         Utils.delete_ref_if_not_nil(L, script_listener.listener);
         Utils.delete_ref_if_not_nil(L, script_listener.script_instance);
