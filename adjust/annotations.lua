@@ -13,6 +13,7 @@
 ---@field coppa_compliance? boolean
 ---@field play_store_kids_compliance? boolean
 ---@field event_deduplication_ids_max_size? number
+---@field external_device_id? string
 ---@field listener? function
 
 ---@class adjust_event
