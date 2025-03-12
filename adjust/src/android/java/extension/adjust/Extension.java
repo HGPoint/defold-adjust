@@ -177,7 +177,7 @@ public class Extension
             config.enablePlayStoreKidsCompliance();
         }
 
-        if (external_device_id) {
+        if (external_device_id != null) {
             config.externalDeviceId(external_device_id);
         }
 
