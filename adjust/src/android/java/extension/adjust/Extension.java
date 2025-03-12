@@ -178,7 +178,7 @@ public class Extension
         }
 
         if (external_device_id != null) {
-            config.externalDeviceId(external_device_id);
+            config.setExternalDeviceId(external_device_id);
         }
 
         config.setEventDeduplicationIdsMaxSize(event_deduplication_ids_max_size);
