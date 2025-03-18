@@ -8,3 +8,7 @@ build
 .cproject
 builtins
 .internal
+/.editor_settings
+/.defold/api
+adjust/src/android/java/.idea
+adjust/manifests/android/.gradle
