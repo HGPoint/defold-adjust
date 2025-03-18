@@ -12,6 +12,7 @@ static jmethodID java_extension_app_deactivate = NULL;
 static jmethodID java_extension_finalize = NULL;
 static jmethodID java_extension_init = NULL;
 static jmethodID java_extension_track_event = NULL;
+static jmethodID java_extension_track_ad_revenue = NULL;
 static jmethodID java_extension_set_session_parameters = NULL;
 static jmethodID java_extension_enable = NULL;
 static jmethodID java_extension_disable = NULL;
@@ -44,6 +45,17 @@ int EXTENSION_TRACK_EVENT(lua_State *L)
 	{
 		ThreadAttacher attacher;
 		result = attacher.env->CallIntMethod(java_extension_object, java_extension_track_event, (jlong)L);
+	}
+	return result;
+}
+
+int EXTENSION_TRACK_AD_REVENUE(lua_State *L)
+{
+	int result = 0;
+	if (java_extension_object != NULL)
+	{
+		ThreadAttacher attacher;
+		result = attacher.env->CallIntMethod(java_extension_object, java_extension_track_ad_revenue, (jlong)L);
 	}
 	return result;
 }
@@ -212,6 +224,7 @@ void EXTENSION_INITIALIZE(lua_State *L)
 	jmethodID screen_recorder_constructor = env->GetMethodID(java_extension_class, "<init>", "(Landroid/app/Activity;)V");
 	java_extension_init = env->GetMethodID(java_extension_class, "init", "(J)I");
 	java_extension_track_event = env->GetMethodID(java_extension_class, "track_event", "(J)I");
+	java_extension_track_ad_revenue = env->GetMethodID(java_extension_class, "track_ad_revenue", "(J)I");
 	java_extension_set_session_parameters = env->GetMethodID(java_extension_class, "set_session_parameters", "(J)I");
 	java_extension_enable = env->GetMethodID(java_extension_class, "enable", "(J)I");
 	java_extension_disable = env->GetMethodID(java_extension_class, "disable", "(J)I");

@@ -14,6 +14,12 @@ int EXTENSION_TRACK_EVENT(lua_State *L)
 	return 0;
 }
 
+int EXTENSION_TRACK_AD_REVENUE(lua_State *L)
+{
+	dmLogInfo("track_ad_revenue");
+	return 0;
+}
+
 int EXTENSION_SET_SESSION_PARAMETERS(lua_State *L)
 {
 	dmLogInfo("set_session_parameters");

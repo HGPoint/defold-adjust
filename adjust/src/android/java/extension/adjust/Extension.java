@@ -7,6 +7,7 @@ import android.app.Activity;
 import android.net.Uri;
 
 import com.adjust.sdk.Adjust;
+import com.adjust.sdk.AdjustAdRevenue;
 import com.adjust.sdk.AdjustAttribution;
 import com.adjust.sdk.AdjustConfig;
 import com.adjust.sdk.AdjustDeeplink;
@@ -262,6 +263,77 @@ public class Extension
         return 0;
     }
 
+    // adjust.track_ad_revenue(params)
+    private int track_ad_revenue(long L) {
+        Utils.check_arg_count(L, 1);
+        if (!check_is_initialized()) {
+            return 0;
+        }
+
+        Scheme scheme = new Scheme()
+                .string("source")
+                .number("revenue")
+                .string("currency")
+                .number("impressions_count")
+                .string("network")
+                .string("unit")
+                .string("placement")
+                .table("callback_parameters")
+                .string("callback_parameters.#")
+                .table("partner_parameters")
+                .string("partner_parameters.#");
+
+        Table params = new Table(L, 1).parse(scheme);
+        String source = params.get_string_not_null("source");
+        Double revenue = params.get_double("revenue");
+        String currency = params.get_string("currency");
+        Integer impressions_count = params.get_integer("impressions_count");
+        String network = params.get_string("network");
+        String unit = params.get_string("unit");
+        String placement = params.get_string("placement");
+        Hashtable<Object, Object> callback_parameters = params.get_table("callback_parameters");
+        Hashtable<Object, Object> partner_parameters = params.get_table("partner_parameters");
+
+        AdjustAdRevenue event = new AdjustAdRevenue(source);
+
+        if (revenue != null && currency != null) {
+            event.setRevenue(revenue, currency);
+        }
+
+        if (impressions_count != null) {
+            event.setAdImpressionsCount(impressions_count);
+        }
+
+        if (network != null) {
+            event.setAdRevenueNetwork(network);
+        }
+
+        if (unit != null) {
+            event.setAdRevenueUnit(unit);
+        }
+
+        if (placement != null) {
+            event.setAdRevenuePlacement(placement);
+        }
+
+        if (callback_parameters != null) {
+            for (Object o : callback_parameters.entrySet()) {
+                Map.Entry entry = (Map.Entry) o;
+                event.addCallbackParameter((String) entry.getKey(), (String) entry.getValue());
+            }
+        }
+
+        if (partner_parameters != null) {
+            for (Object o : partner_parameters.entrySet()) {
+                Map.Entry entry = (Map.Entry) o;
+                event.addPartnerParameter((String) entry.getKey(), (String) entry.getValue());
+            }
+        }
+
+        Adjust.trackAdRevenue(event);
+        return 0;
+    }
+
     // adjust.set_session_parameters(params)
     private int set_session_parameters(long L) {
         Utils.check_arg_count(L, 1);
@@ -354,6 +426,7 @@ public class Extension
         if (!check_is_initialized()) {
             return 0;
         }
+
         if (Lua.type(L, 1) == Lua.Type.STRING) {
             Uri uri = Uri.parse(Lua.tostring(L, 1));
             Adjust.processDeeplink(new AdjustDeeplink(uri), activity);

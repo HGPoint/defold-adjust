@@ -1,6 +1,6 @@
 ---@meta
 
----@class adjust_config
+---@class adjust.config
 ---@field app_token string
 ---@field is_sandbox? boolean
 ---@field app_secret? table
@@ -16,7 +16,7 @@
 ---@field external_device_id? string
 ---@field listener? function
 
----@class adjust_event
+---@class adjust.event
 ---@field token string
 ---@field revenue? number
 ---@field currency? string
@@ -25,11 +25,22 @@
 ---@field callback_parameters? string[]
 ---@field partner_parameters? string[]
 
----@class adjust_session_parameters
+---@class adjust.ad_revenue
+---@field source string
+---@field revenue? number
+---@field currency? string
+---@field impressions_count? number
+---@field network? string
+---@field unit? string
+---@field placement? string
 ---@field callback_parameters? string[]
 ---@field partner_parameters? string[]
 
----@class adjust_attribution
+---@class adjust.session_parameters
+---@field callback_parameters? string[]
+---@field partner_parameters? string[]
+
+---@class adjust.attribution
 ---@field adgroup string
 ---@field campaign string
 ---@field click_label string
@@ -41,13 +52,16 @@
 ---@class adjust
 adjust = {}
 
----@param cfg adjust_config
+---@param cfg adjust.config
 function adjust.init(cfg) end
 
----@param event adjust_event
+---@param event adjust.event
 function adjust.track_event(event) end
 
----@param parameters adjust_session_parameters
+---@param event adjust.ad_revenue
+function adjust.track_ad_revenue(event) end
+
+---@param parameters adjust.session_parameters
 function adjust.set_session_parameters(parameters) end
 
 function adjust.enable() end
@@ -66,7 +80,7 @@ function adjust.process_deeplink(url) end
 
 function adjust.gdpr_forget_me() end
 
----@param callback fun(attribution: adjust_attribution)
+---@param callback fun(attribution: adjust.attribution)
 function adjust.get_attribution(callback) end
 
 ---@param callback fun(adid: string)
