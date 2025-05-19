@@ -337,9 +337,6 @@ public class Extension
     // adjust.set_session_parameters(params)
     private int set_session_parameters(long L) {
         Utils.check_arg_count(L, 1);
-        if (!check_is_initialized()) {
-            return 0;
-        }
         Scheme scheme = new Scheme()
                 .table("callback_parameters")
                 .string("callback_parameters.#")
