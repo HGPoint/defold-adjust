@@ -1,0 +1,3 @@
+platform :ios, '12.0'
+
+pod 'Adjust', '5.8.0'
