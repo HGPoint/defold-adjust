@@ -41,15 +41,15 @@ int EXTENSION_GET_GOOGLE_AD_ID(lua_State *L) {return [extension_instance get_goo
 int EXTENSION_GET_SDK_VERSION(lua_State *L) {return [extension_instance get_sdk_version:L];}
 int EXTENSION_GET_IDFA(lua_State *L) {return [extension_instance get_idfa:L];}
 
--(id)init:(lua_State*)L {
-	self = [super init];
-
-    is_initialized = false;
-	script_listener = [LuaScriptListener new];
-    script_listener.listener = LUA_REFNIL;
-	script_listener.script_instance = LUA_REFNIL;
-
-	return self;
+-(id)init {
+    self = [super init];
+    if (self) {
+        is_initialized = false;
+        script_listener = [LuaScriptListener new];
+        script_listener.listener = LUA_REFNIL;
+        script_listener.script_instance = LUA_REFNIL;
+    }
+    return self;
 }
 
 -(bool)check_is_initialized {
@@ -255,7 +255,7 @@ int EXTENSION_GET_IDFA(lua_State *L) {return [extension_instance get_idfa:L];}
 
 	ADJAdRevenue *adRevenue = [[ADJAdRevenue alloc] initWithSource:source];
 	if (!adRevenue) {
-		dmLogInfo("Failed to create ADJAdRevenue with source: %@", source);
+		dmLogInfo("Failed to create ADJAdRevenue with source: %s", [source UTF8String]);
 		return 0;
 	}
 
@@ -581,7 +581,7 @@ int EXTENSION_GET_IDFA(lua_State *L) {return [extension_instance get_idfa:L];}
 #pragma mark - Defold lifecycle -
 
 void EXTENSION_INITIALIZE(lua_State *L) {
-	extension_instance = [[ExtensionInterface alloc] init:L];
+    extension_instance = [[ExtensionInterface alloc] init];
 }
 
 void EXTENSION_UPDATE(lua_State *L) {

@@ -19,6 +19,7 @@ static const luaL_reg lua_functions[] = {
 	{"get_amazon_ad_id", EXTENSION_GET_AMAZON_AD_ID},
 	{"get_google_ad_id", EXTENSION_GET_GOOGLE_AD_ID},
 	{"get_sdk_version", EXTENSION_GET_SDK_VERSION},
+	{"get_idfa", EXTENSION_GET_IDFA},
 	{0, 0}};
 
 dmExtension::Result APP_INITIALIZE(dmExtension::AppParams *params)

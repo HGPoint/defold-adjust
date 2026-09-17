@@ -98,6 +98,12 @@ int EXTENSION_GET_SDK_VERSION(lua_State *L)
 	return 0;
 }
 
+int EXTENSION_GET_IDFA(lua_State *L)
+{
+	dmLogInfo("get_idfa");
+	return 0;
+}
+
 void EXTENSION_INITIALIZE(lua_State *L)
 {
 }
