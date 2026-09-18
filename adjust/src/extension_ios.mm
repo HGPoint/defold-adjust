@@ -41,15 +41,15 @@ int EXTENSION_GET_GOOGLE_AD_ID(lua_State *L) {return [extension_instance get_goo
 int EXTENSION_GET_SDK_VERSION(lua_State *L) {return [extension_instance get_sdk_version:L];}
 int EXTENSION_GET_IDFA(lua_State *L) {return [extension_instance get_idfa:L];}
 
--(id)init:(lua_State*)L {
-	self = [super init];
-
-    is_initialized = false;
-	script_listener = [LuaScriptListener new];
-    script_listener.listener = LUA_REFNIL;
-	script_listener.script_instance = LUA_REFNIL;
-
-	return self;
+-(id)init {
+    self = [super init];
+    if (self) {
+        is_initialized = false;
+        script_listener = [LuaScriptListener new];
+        script_listener.listener = LUA_REFNIL;
+        script_listener.script_instance = LUA_REFNIL;
+    }
+    return self;
 }
 
 -(bool)check_is_initialized {
@@ -73,29 +73,20 @@ int EXTENSION_GET_IDFA(lua_State *L) {return [extension_instance get_idfa:L];}
 
     Scheme *scheme = [[Scheme alloc] init];
 	[scheme string:@"app_token"];
+	[scheme string:@"external_device_id"];
 	[scheme boolean:@"is_sandbox"];
-	[scheme table:@"app_secret"];          // removed in v5 — ignored
-	[scheme number:@"app_secret.id"];
-	[scheme number:@"app_secret.info1"];
-	[scheme number:@"app_secret.info2"];
-	[scheme number:@"app_secret.info3"];
-	[scheme number:@"app_secret.info4"];
 	[scheme string:@"default_tracker"];
-	[scheme number:@"delay_start"];        // removed in v5 — ignored
-	[scheme boolean:@"is_device_known"];   // removed in v5 — ignored
-	[scheme boolean:@"event_buffering"];  // removed in v5 — ignored
 	[scheme string:@"log_level"];
 	[scheme string:@"sdk_prefix"];
 	[scheme boolean:@"send_in_background"];
-	[scheme string:@"user_agent"];        // removed in v5 — ignored
     [scheme function:@"listener"];
 
     Table *params = [[Table alloc] init:L index:1];
     [params parse:scheme];
 
 	NSString *app_token = [params get_string_not_null:@"app_token"];
+	NSString *external_device_id = [params get_string:@"external_device_id"];
 	bool is_sandbox = [params get_boolean:@"is_sandbox" default:false];
-	// app_secret, delay_start, is_device_known, event_buffering, user_agent — removed in v5
 	NSString *default_tracker = [params get_string:@"default_tracker"];
 	NSString *log_level = [params get_string:@"log_level"];
 	NSString *sdk_prefix = [params get_string:@"sdk_prefix"];
@@ -110,6 +101,10 @@ int EXTENSION_GET_IDFA(lua_State *L) {return [extension_instance get_idfa:L];}
 	ADJConfig *config = [[ADJConfig alloc] initWithAppToken:app_token
 	                                            environment:is_sandbox ? ADJEnvironmentSandbox : ADJEnvironmentProduction];
 
+	if (external_device_id) {
+		[config setExternalDeviceId:external_device_id];
+	}
+
 	if (default_tracker) {
 		[config setDefaultTracker:default_tracker];
 	}
@@ -122,7 +117,7 @@ int EXTENSION_GET_IDFA(lua_State *L) {return [extension_instance get_idfa:L];}
 			l = ADJLogLevelDebug;
 		} else if ([log_level isEqualToString:@"error"]) {
 			l = ADJLogLevelError;
-		} else if ([log_level isEqualToString:@"supress"] || [log_level isEqualToString:@"suppress"]) {
+		} else if ([log_level isEqualToString:@"suppress"]) {
 			l = ADJLogLevelSuppress;
 		} else if ([log_level isEqualToString:@"verbose"]) {
 			l = ADJLogLevelVerbose;
@@ -252,7 +247,7 @@ int EXTENSION_GET_IDFA(lua_State *L) {return [extension_instance get_idfa:L];}
 
 	ADJAdRevenue *adRevenue = [[ADJAdRevenue alloc] initWithSource:source];
 	if (!adRevenue) {
-		dmLogInfo("Failed to create ADJAdRevenue with source: %@", source);
+		dmLogInfo("Failed to create ADJAdRevenue with source: %s", [source UTF8String]);
 		return 0;
 	}
 
@@ -412,7 +407,7 @@ int EXTENSION_GET_IDFA(lua_State *L) {return [extension_instance get_idfa:L];}
 
 // adjust.get_attribution() — now async
 -(int)get_attribution:(lua_State*)L {
-	[Utils check_arg_count:L count:0];
+	[Utils check_arg_count:L count:1];
 	if (![self check_is_initialized]) {
 		return 0;
 	}
@@ -578,7 +573,7 @@ int EXTENSION_GET_IDFA(lua_State *L) {return [extension_instance get_idfa:L];}
 #pragma mark - Defold lifecycle -
 
 void EXTENSION_INITIALIZE(lua_State *L) {
-	extension_instance = [[ExtensionInterface alloc] init:L];
+    extension_instance = [[ExtensionInterface alloc] init];
 }
 
 void EXTENSION_UPDATE(lua_State *L) {
