@@ -71,7 +71,9 @@ static NSMutableArray *tasks = [[NSMutableArray alloc] init];
 	task.script_listener = script_listener;
 	task.event = [NSDictionary dictionaryWithDictionary:event];
 	task.delete_ref = delete_ref;
-	[tasks addObject:task];
+	@synchronized(tasks) {
+        [tasks addObject:task];
+    }
 }
 
 +(void)set_c_function_as_field:(lua_State*)L name:(const char*)name function:(lua_CFunction)function {
@@ -111,7 +113,8 @@ static NSMutableArray *tasks = [[NSMutableArray alloc] init];
 			luaL_error(L, "Utils.push_value(): failed to push an NSNumber value. C type: %s", cType);
 		}
 	} else if([object isKindOfClass:[NSData class]]) {
-		lua_pushstring(L, (const char*)[(NSData*)object bytes]);
+		NSData *data = (NSData*)object;
+		lua_pushlstring(L, (const char*)[data bytes], [data length]);
 	} else if ([object isKindOfClass:[LuaLightuserdata class]]) {
 		lua_pushlightuserdata(L, [(LuaLightuserdata*)object get_pointer]);
 	} else if ([object conformsToProtocol:@protocol(LuaPushable)]) {
@@ -146,8 +149,19 @@ static NSMutableArray *tasks = [[NSMutableArray alloc] init];
 
 +(void)execute_tasks:(lua_State*)L {
 	_L = L;
-	while (tasks.count > 0) {
-		LuaTask *task = tasks.firstObject;
+	while (YES) {
+		LuaTask *task = nil;
+		@synchronized(tasks) {
+			if (tasks.count > 0) {
+				task = tasks.firstObject;
+				[tasks removeObjectAtIndex:0];
+			}
+		}
+		
+		if (task == nil) {
+			break;
+		}
+		
 		lua_rawgeti(L, LUA_REGISTRYINDEX, task.script_listener.listener);
 		lua_rawgeti(L, LUA_REGISTRYINDEX, task.script_listener.script_instance);
 		dmScript::SetInstance(L);
@@ -157,7 +171,6 @@ static NSMutableArray *tasks = [[NSMutableArray alloc] init];
 			luaL_unref(L, LUA_REGISTRYINDEX, task.script_listener.listener);
 			luaL_unref(L, LUA_REGISTRYINDEX, task.script_listener.script_instance);
 		}
-		[tasks removeObjectAtIndex:0];
 	}
 }
 

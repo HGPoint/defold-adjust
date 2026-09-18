@@ -18,8 +18,8 @@
 @end
 
 @interface LuaTask : NSObject
-@property(nonatomic,retain) LuaScriptListener *script_listener;
-@property(nonatomic,retain) NSDictionary *event;
+@property(nonatomic,strong) LuaScriptListener *script_listener;
+@property(nonatomic,strong) NSDictionary *event;
 @property(nonatomic) bool delete_ref;
 @end
 
@@ -87,7 +87,7 @@
 -(NSData*)get_byte_array_not_null:(NSString*)path;
 -(LuaLightuserdata*)get_lightuserdata:(NSString*)path default:(LuaLightuserdata*)default_value;
 -(LuaLightuserdata*)get_lightuserdata:(NSString*)path;
--(LuaLightuserdata*)get_lightuserdata_not_null:(NSString*)pat;
+-(LuaLightuserdata*)get_lightuserdata_not_null:(NSString*)path;
 -(int)get_function:(NSString*)path default:(int)default_value;
 -(NSNumber*)get_function:(NSString*)path;
 -(NSDictionary*)get_table:(NSString*)path default:(NSDictionary*)default_value;

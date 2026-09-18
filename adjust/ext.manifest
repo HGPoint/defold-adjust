@@ -3,5 +3,5 @@ name: "adjust"
 platforms:
     arm64-ios:
         context:
-            frameworks: ["AdSupport", "iAd", "CoreTelephony", "WebKit", "AppTrackingTransparency"]
+            frameworks: ["AdSupport", "WebKit", "AppTrackingTransparency", "AdServices", "StoreKit"]
             linkFlags:  ["-ObjC"]

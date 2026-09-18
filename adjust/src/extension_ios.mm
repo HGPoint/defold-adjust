@@ -73,7 +73,6 @@ int EXTENSION_GET_IDFA(lua_State *L) {return [extension_instance get_idfa:L];}
 
     Scheme *scheme = [[Scheme alloc] init];
 	[scheme string:@"app_token"];
-	[scheme string:@"fb_app_id"];
 	[scheme string:@"external_device_id"];
 	[scheme boolean:@"is_sandbox"];
 	[scheme string:@"default_tracker"];
@@ -86,10 +85,8 @@ int EXTENSION_GET_IDFA(lua_State *L) {return [extension_instance get_idfa:L];}
     [params parse:scheme];
 
 	NSString *app_token = [params get_string_not_null:@"app_token"];
-	NSString *fb_app_id = [params get_string:@"fb_app_id"];
 	NSString *external_device_id = [params get_string:@"external_device_id"];
 	bool is_sandbox = [params get_boolean:@"is_sandbox" default:false];
-	// app_secret, delay_start, is_device_known, event_buffering, user_agent — removed in v5
 	NSString *default_tracker = [params get_string:@"default_tracker"];
 	NSString *log_level = [params get_string:@"log_level"];
 	NSString *sdk_prefix = [params get_string:@"sdk_prefix"];
@@ -103,11 +100,6 @@ int EXTENSION_GET_IDFA(lua_State *L) {return [extension_instance get_idfa:L];}
 
 	ADJConfig *config = [[ADJConfig alloc] initWithAppToken:app_token
 	                                            environment:is_sandbox ? ADJEnvironmentSandbox : ADJEnvironmentProduction];
-
-
-	if (fb_app_id) {
-		[config setFbAppId:fb_app_id];
-	}
 
 	if (external_device_id) {
 		[config setExternalDeviceId:external_device_id];
